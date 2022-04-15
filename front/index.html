@@ -1,0 +1,88 @@
+<script type="importmap">
+  {
+    "imports": {
+      "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+    }
+  }
+</script>
+
+<div id="app">
+  The time is: {{time}}
+  <br/>
+  <select @change="setZone($event.target.value)">
+    <option>select zone</option>
+    <option value="0">GMT zone 0</option>
+    <option value="1">+1</option>
+    <option value="2">+2</option>
+    <option value="3">+3</option>
+    <option value="4">+4</option>
+    <option value="5">+5</option>
+    <option value="6">+6</option>
+    <option value="7">+7</option>
+    <option value="8">+8</option>
+    <option value="9">+9</option>
+    <option value="10">+10</option>
+    <option value="11">+11</option>
+    <option value="12">+12</option>
+    <option value="-1">-1</option>
+    <option value="-2">-2</option>
+    <option value="-3">-3</option>
+    <option value="-4">-4</option>
+    <option value="-5">-5</option>
+    <option value="-6">-6</option>
+    <option value="-7">-7</option>
+    <option value="-8">-8</option>
+    <option value="-9">-9</option>
+    <option value="-10">-10</option>
+    <option value="-11">-11</option>
+  </select>
+  <br/>
+  <br/>
+  <div @click='timeZoneHandler()' style="display: inline-block; cursor: pointer; padding: 5px; color: white; background: black;">
+    send request
+  </div>
+  <br/>
+</div>
+
+<script type="module">
+  import { createApp } from 'vue'
+
+  createApp({
+    data() {
+      return {
+        time: 'Select Zone to Handle Time', 
+        zone: ''
+      }
+    },  
+    created(){
+    }, 
+    methods: {
+      timeZoneHandler(){
+        console.log('inside timezone handler');
+        async function postData(url = '', data = {}) {
+          const response = await fetch(url, {
+            method: 'POST',
+            mode: "cors",
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+             'Content-Type': 'application/json'
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify(data)
+          });
+          return response.json();
+        }
+        postData('http://127.0.0.1:5000/time', { zone: this.zone })
+        .then(data => {
+          console.log(data); // JSON data parsed by `data.json()` call
+          this.time = data.time
+        });
+      },
+      setZone(zone){
+        console.log('value of zone: ', zone)
+        this.zone = zone; 
+      }
+    }
+  }).mount('#app')
+</script>
